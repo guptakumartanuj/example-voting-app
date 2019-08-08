@@ -15,13 +15,18 @@ pipeline{
         stage("test"){
             steps{
                 echo "This is a stage test .."
-                sleep 3
+                dir("worker"){
+                sh 'mvn clean test'
+                }
             }
         }
         stage("package"){
             steps{
                 echo "This is a stage package .."
-                sleep 7
+                dir("worker"){
+                sh 'mvn package -DskipTests'
+                archiveArtifacts artifacts: '**/target/*.jar'
+                }
             }
         }
     }
