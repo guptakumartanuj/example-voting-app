@@ -5,6 +5,9 @@ pipeline{
     }
     stages{
         stage("build"){
+            when{
+            changeset "**/result/**"
+            }
             steps{
                 echo "Voting nodejs build step.."
                 dir("result"){
@@ -13,6 +16,9 @@ pipeline{
             }
         }
         stage("test"){
+            when{
+            changeset "**/result/**"
+            }
             steps{
                 echo "Voting nodejs test step.."
                 dir("result"){
