@@ -6,7 +6,7 @@ pipeline{
     stages{
         stage("build"){
             steps{
-                echo "This is a stage build.."
+                echo "This is a stage first build.."
                 dir("worker"){
                 sh 'mvn compile'
                 }
