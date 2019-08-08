@@ -7,7 +7,7 @@ pipeline{
         stage("build"){
             steps{
                 echo "Voting nodejs build step.."
-                dir("build"){
+                dir("result"){
                 sh 'npm install'
                 }
             }
@@ -15,7 +15,7 @@ pipeline{
         stage("test"){
             steps{
                 echo "Voting nodejs test step.."
-                dir("test"){
+                dir("result"){
                 sh ' npm test'
                 }
             }
