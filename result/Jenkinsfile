@@ -1,7 +1,7 @@
 pipeline{
     agent any
     tools{
-    maven 'nodejs 12.8.0'
+    nodejs '12.8.0'
     }
     stages{
         stage("build"){
