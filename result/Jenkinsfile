@@ -1,0 +1,30 @@
+pipeline{
+    agent any
+    tools{
+    maven 'nodejs 12.8.0'
+    }
+    stages{
+        stage("build"){
+            steps{
+                echo "Voting nodejs build step.."
+                dir("build"){
+                sh 'npm install'
+                }
+            }
+        }
+        stage("test"){
+            steps{
+                echo "Voting nodejs test step.."
+                dir("test"){
+                sh ' npm test'
+                }
+            }
+        }
+    }
+    
+    post{
+        always{
+            echo "This nodejs pipeline is completed .."
+        }
+    }
+}
