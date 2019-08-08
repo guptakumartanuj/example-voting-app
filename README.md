@@ -1,6 +1,6 @@
 Example Voting App
 =========
-
+Making the changes for readme
 Getting started
 ---------------
 
