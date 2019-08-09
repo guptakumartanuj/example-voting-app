@@ -1,49 +1,86 @@
 pipeline{
-    agent any
-    tools{
-    maven 'Maven 3.6.1'
-    }
+
+    agent none
+
+
     stages{
         stage("build"){
-             when{
-            changeset "**/worker/**"
+            agent{
+                 docker{
+                   image 'maven:3.6.1-jdk-8-slim'
+                   args '-v m2cache:/root/.m2'
+                 }
+            }
+
+            when{
+              changeset "**/worker/**"
             }
             steps{
-                echo "This is a stage first build.."
+                echo "Building worker app..."
                 dir("worker"){
-                sh 'mvn compile'
+                  sh 'mvn compile'
                 }
             }
         }
         stage("test"){
-             when{
-            changeset "**/worker/**"
+            agent{
+                 docker{
+                   image 'maven:3.6.1-jdk-8-slim'
+                   args '-v m2cache:/root/.m2'
+                 }
+            }
+            when{
+              changeset "**/worker/**"
             }
             steps{
-                echo "This is a stage test .."
+                echo "Testing worker app..."
                 dir("worker"){
-                sh 'mvn clean test'
+                  sh 'mvn clean test'
                 }
             }
         }
-        stage("package"){
-             when{
-            changeset "**/worker/**"
-            branch 'master'
+         stage("package"){
+            agent{
+                 docker{
+                   image 'maven:3.6.1-jdk-8-slim'
+                   args '-v m2cache:/root/.m2'
+                 }
+            }
+            when{
+              changeset "**/worker/**"
+              branch 'master'
             }
             steps{
-                echo "This is a stage package .."
+                echo "Packaging worker app..."
                 dir("worker"){
-                sh 'mvn package -DskipTests'
-                archiveArtifacts artifacts: '**/target/*.jar'
+                  sh 'mvn package -DskipTests'
+                  archiveArtifacts artifacts: '**/target/*.jar'
                 }
             }
         }
+
+       stage('docker-package'){
+         agent any
+         when{
+            changeset "**/worker/**"
+         }
+         steps{
+           echo 'Packaging worker app with docker'
+           script{
+             docker.withRegistry('https://index.docker.io/v1/', 'dockerlogin') {
+                def workerImage = docker.build("guptakumartanuj/worker:v${env.BUILD_ID}", "./worker")
+                workerImage.push()
+                workerImage.push("latest")
+             }
+          }
+      }
+}
+
     }
-    
+
     post{
         always{
-            echo "THis pipeline is completed .."
+            echo "This pipeline run is completed.."
         }
     }
 }
